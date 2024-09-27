@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 Totema
+Copyright (c) 2024 [Totema](https://github.com/TotemaM)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

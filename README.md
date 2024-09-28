@@ -7,7 +7,8 @@
 
 ## Prerequisits
 
-GNU Make is required to compile the project.
+- GNU Make
+- G++
 
 ## Compiling targets
 | Command      | Description                                                                |

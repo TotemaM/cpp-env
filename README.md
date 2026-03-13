@@ -6,23 +6,24 @@
 - [Execute](#execute)
 
 ## Prerequisits
-
 - GNU Make
-- G++
+- g++
 
 ## Compiling targets
-| Command      | Description                                                                |
-| :----------- | :------------------------------------------------------------------------- |
-| `make`       | Compile main program and test environment                                  |
-| `make prog`  | Compile main program                                                       |
-| `make test`  | Compile test environment and linking it with main program components       |
-| `make clear` | Delete all previous compiled files                                         |
-| `make lsan`  | Compile main and test environment with address and memory leak sanitizers  |
-| `make tsan`  | Compile main and test environment with thread sanitizer                    |
-| `make prod`  | Compile main program only with level 3 optimization flag                   |
+You should rename the `PRG_OUT` and `TST_OUT` variables inside the [Makefile](Makefile).  
+By default their values are set to `prog` and `test` respectively.
 
-It's recommended to `make clear` before compiling with different flags to avoid *bad linkings*.
+Compile lines are hidden, you can check them using `make -n`.
+| Command                    | Description                                                                |
+| :-                         | :-                                                                         |
+| `make` and `make all`      | Calling the targets to compile the main and test program                   |
+| `make clean`               | Delete all intermidiate compile files                                      |
+| `make fclean`              | Calling `clean` and deleting compiled executables                          |
+| `make lsan`                | Calling `all` with environment with address and memory leak sanitizers     |
+| `make tsan`                | Calling `all` with thread sanitizer                                        |
+| `make prod`                | Calling `all` with level 3 optimization flag only                          |
+
+It's recommended to `make clean` before compiling with different flags to avoid *bad linkings*.
 
 ## Execute
-
 The main program and test executable are both compiled inside the `out` directory.

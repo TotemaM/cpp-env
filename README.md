@@ -3,15 +3,14 @@
 ## Table of content
 - [Prerequisits](#prerequisits)
 - [Compiling targets](#compiling-targets)
-- [Execute](#execute)
 
 ## Prerequisits
 - GNU Make
-- g++
+- `g++` (or `clang`)
 
 ## Compiling targets
 You should rename the `PRG_OUT` and `TST_OUT` variables inside the [Makefile](Makefile).  
-By default their values are set to `prog` and `test` respectively.
+By default their values are set to `prog` and `test_prog` respectively.
 
 Compile lines are hidden, you can check them using `make -n`.
 | Command                    | Description                                                                |
@@ -24,6 +23,3 @@ Compile lines are hidden, you can check them using `make -n`.
 | `make prod`                | Calling `all` with level 3 optimization flag only                          |
 
 It's recommended to `make clean` before compiling with different flags to avoid *bad linkings*.
-
-## Execute
-The main program and test executable are both compiled inside the `out` directory.

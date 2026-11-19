@@ -7,87 +7,96 @@
 ################################################################################
 
 CXX = g++
-VER = -std=c++20
-FLG = -Wall -Wextra -Wpedantic -O0 -g3 -fno-omit-frame-pointer \
-		-Wcast-align=strict -Wcast-qual -Wsign-conversion -Wctor-dtor-privacy \
-		-Wdisabled-optimization -Wdouble-promotion -Wduplicated-cond \
-		-Wduplicated-branches -Wformat=2 -Winit-self -Wlogical-op \
-		-Wmissing-declarations -Wmissing-include-dirs -Wnoexcept \
-		-Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual \
-		-Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel \
-		-Wundef -Wuninitialized -Wuseless-cast -Wzero-as-null-pointer-constant \
-		-fstack-protector-strong
+VER =
 
-PRG_OUT = prog
-TST_OUT = test_prog
+GCC_FLGS = -Wuseless-cast -Wcast-align=strict -Woverloaded-virtual=2 \
+	-Wformat-overflow=2 -Wformat-truncation=2 -Wimplicit-fallthrough=5 \
+	-Wduplicated-cond -Wduplicated-branches -Wlogical-op
 
-BLD_DIR = build
-$(shell mkdir -p $(BLD_DIR))
+FLGS = -Wall -Wextra -Wpedantic -pedantic-errors -Og -g3 \
+	-fno-omit-frame-pointer -Wshadow -Wconversion -Wsign-conversion \
+	-Wdouble-promotion -Wold-style-cast -Wcast-qual -Wnon-virtual-dtor \
+	-Wsuggest-override -Wnull-dereference -Wformat=2 \
+	-Wmisleading-indentation -Wmissing-declarations -Wredundant-decls \
+	-Wundef -Wextra-semi -Wzero-as-null-pointer-constant -Wunused \
+	-Wuninitialized -D_GLIBCXX_ASSERTIONS -fstack-protector-strong \
+	-fstack-clash-protection $(GCC_FLGS)
 
-all: $(PRG_OUT) $(TST_OUT)
+BLDD = build
 
 ################################################################################
 # DEFAULT ENVIRONMENT                                                          #
 ################################################################################
-PRG_DIR = src
-PRG_SRC = $(shell find $(PRG_DIR) -type f -name *.cpp)
-PRG_OBJ = $(patsubst $(PRG_DIR)/%.cpp, $(BLD_DIR)/$(PRG_DIR)/%.o, $(PRG_SRC))
-PRG_INC = -I $(PRG_DIR)
-PRG_LNK =
-PRG_LIB =
-PRG_DEP = $(PRG_OBJ:.o=.d)
+NAME = $(BLDD)/program
+SRCD = src
+SRCS := $(shell find $(SRCD) -type f -name "*.cpp")
+OBJS = $(patsubst $(SRCD)/%.cpp, $(BLDD)/$(SRCD)/%.o, $(SRCS))
+INCS = -I $(SRCD)
+LNKS =
+LIBS =
+DEPS = $(OBJS:.o=.d)
 
-$(PRG_OUT): $(PRG_OBJ)
+$(NAME): $(OBJS)
 	@ echo "$@"
-	@ $(CXX) $(VER) $(FLG) $^ -o $@ $(PRG_INC) $(PRG_LNK) $(PRG_LIB)
+	@ $(CXX) $(VER) $(FLGS) $^ -o $@ $(INCS) $(LNKS) $(LIBS)
 
-$(BLD_DIR)/$(PRG_DIR)/%.o: $(PRG_DIR)/%.cpp
+$(BLDD)/$(SRCD)/%.o: $(SRCD)/%.cpp
 	@ mkdir -p $(@D)
 	@ echo "$<"
-	@ $(CXX) $(VER) $(FLG) -MMD -MP -c $< -o $@ $(PRG_INC)
+	@ $(CXX) $(VER) $(FLGS) -MMD -MP -c $< -o $@ $(INCS)
 
--include $(PRG_DEP)
+-include $(DEPS)
 
 ################################################################################
 # TESTING ENVIRONMENT                                                          #
 ################################################################################
-TST_DIR = test
-TST_SRC = $(shell find $(TST_DIR) -type f -name '*.cpp')
-TST_OBJ = $(patsubst $(TST_DIR)/%.cpp, $(BLD_DIR)/$(TST_DIR)/%.o, $(TST_SRC))
-TST_OBJ += $(filter-out $(BLD_DIR)/$(PRG_DIR)/main.o \
-	$(BLD_DIR)/$(PRG_DIR)/main.d, $(PRG_OBJ))
-TST_INC = $(PRG_INC) -I $(TST_DIR)
-TST_LNK = $(PRG_LNK)
-TST_LIB = $(PRG_LIB)
-TST_DEP = $(TST_OBJ:.o=.d)
+T_NAME = $(BLDD)/tester
+T_SRCD = test
+T_SRCS := $(shell find $(T_SRCD) -type f -name "*.cpp")
+T_OBJS = $(patsubst $(T_SRCD)/%.cpp, $(BLDD)/$(T_SRCD)/%.o, $(T_SRCS))
+T_OBJS += $(filter-out $(BLDD)/$(SRCD)/main.o, $(OBJS))
+T_INCS = $(INCS) -I $(T_SRCD)
+T_LNKS = $(LNKS)
+T_LIBS = $(LIBS)
+T_DEPS = $(T_OBJS:.o=.d)
 
-$(TST_OUT): $(TST_OBJ)
+$(T_NAME): $(T_OBJS)
 	@ echo "$@"
-	@ $(CXX) $(VER) $(FLG) $^ -o $@ $(TST_INC) $(TST_LNK) $(TST_LIB)
+	@ $(CXX) $(VER) $(FLGS) $^ -o $@ $(T_INCS) $(T_LNKS) $(T_LIBS)
 
-$(BLD_DIR)/$(TST_DIR)/%.o: $(TST_DIR)/%.cpp
+$(BLDD)/$(T_SRCD)/%.o: $(T_SRCD)/%.cpp
 	@ mkdir -p $(@D)
 	@ echo "$<"
-	@$(CXX) $(VER) $(FLG) -MMD -MP -c $< -o $@ $(TST_INC)
+	@ $(CXX) $(VER) $(FLGS) -MMD -MP -c $< -o $@ $(T_INCS)
 
--include $(TST_DEP)
+-include $(T_DEPS)
 
 ################################################################################
 # FAKE TARGETS                                                                 #
 ################################################################################
-.PHONY: clean fclean lsan tsan prod
+.PHONY: all clean fclean re san tsan prod
+
+all: $(NAME) $(T_NAME)
 
 clean:
-	rm -rf $(BLD_DIR)
+	rm -rf $(BLDD)
 
-fclean:
-	rm -rf $(PRG_OUT) $(TST_OUT) $(BLD_DIR)
+fclean: clean
+	rm -rf $(NAME) $(T_NAME)
 
-lsan: FLG += -fsanitize=leak,address,undefined
-lsan: all
+re: fclean $(NAME)
 
-tsan: FLG += -fsanitize=thread,undefined
+san: FLGS += -fsanitize=leak,address,undefined
+san: all
+
+tsan: FLGS += -fsanitize=thread,undefined
 tsan: all
 
-prod: FLG = -O3
+prod: FLGS = -O3
 prod: all
+
+run: $(NAME)
+	@ ./$<
+
+test: $(T_NAME)
+	@ ./$<

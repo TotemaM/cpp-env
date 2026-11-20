@@ -7,11 +7,11 @@
 ################################################################################
 
 CXX = g++
-VER =
+VER = -std=c++23
 
 GCC_FLGS = -Wuseless-cast -Wcast-align=strict -Woverloaded-virtual=2 \
 	-Wformat-overflow=2 -Wformat-truncation=2 -Wimplicit-fallthrough=5 \
-	-Wduplicated-cond -Wduplicated-branches -Wlogical-op
+	-Wduplicated-cond -Wduplicated-branches -Wlogical-op -D_GLIBCXX_ASSERTIONS
 
 FLGS = -Wall -Wextra -Wpedantic -pedantic-errors -Og -g3 \
 	-fno-omit-frame-pointer -Wshadow -Wconversion -Wsign-conversion \
@@ -19,7 +19,7 @@ FLGS = -Wall -Wextra -Wpedantic -pedantic-errors -Og -g3 \
 	-Wsuggest-override -Wnull-dereference -Wformat=2 \
 	-Wmisleading-indentation -Wmissing-declarations -Wredundant-decls \
 	-Wundef -Wextra-semi -Wzero-as-null-pointer-constant -Wunused \
-	-Wuninitialized -D_GLIBCXX_ASSERTIONS -fstack-protector-strong \
+	-Wuninitialized -fstack-protector-strong \
 	-fstack-clash-protection $(GCC_FLGS)
 
 BLDD = build
@@ -51,7 +51,7 @@ $(BLDD)/$(SRCD)/%.o: $(SRCD)/%.cpp
 # TESTING ENVIRONMENT                                                          #
 ################################################################################
 T_NAME = $(BLDD)/tester
-T_SRCD = test
+T_SRCD = tests
 T_SRCS := $(shell find $(T_SRCD) -type f -name "*.cpp")
 T_OBJS = $(patsubst $(T_SRCD)/%.cpp, $(BLDD)/$(T_SRCD)/%.o, $(T_SRCS))
 T_OBJS += $(filter-out $(BLDD)/$(SRCD)/main.o, $(OBJS))
@@ -74,7 +74,7 @@ $(BLDD)/$(T_SRCD)/%.o: $(T_SRCD)/%.cpp
 ################################################################################
 # FAKE TARGETS                                                                 #
 ################################################################################
-.PHONY: all clean fclean re san tsan prod
+.PHONY: all clean fclean re san tsan prod run test
 
 all: $(NAME) $(T_NAME)
 
